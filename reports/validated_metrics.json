@@ -1,0 +1,52 @@
+{
+  "records": 180519,
+  "valid": 180519,
+  "metrics": {
+    "lines": 180519,
+    "gross": 36784734.31,
+    "discount": 3730378.4,
+    "revenue": 33054402.04,
+    "profit": 3966902.9699999997,
+    "margin_pct": 12.001133662014356,
+    "loss_lines": 33784,
+    "loss_amount": 3883547.3499999996,
+    "late_rate_pct": 54.82913155955883
+  },
+  "reconciliation_bad": 0,
+  "categories_negative": [],
+  "markets": [
+    {
+      "Market": "Europe",
+      "revenue": 9769198.23,
+      "profit": 1169442.96,
+      "margin_pct": 11.970715840413446
+    },
+    {
+      "Market": "LATAM",
+      "revenue": 9235761.99,
+      "profit": 1123321.61,
+      "margin_pct": 12.162738832120988
+    },
+    {
+      "Market": "Pacific Asia",
+      "revenue": 7434262.58,
+      "profit": 857753.44,
+      "margin_pct": 11.537841591815283
+    },
+    {
+      "Market": "USCA",
+      "revenue": 4553499.87,
+      "profit": 564313.78,
+      "margin_pct": 12.392967961147653
+    },
+    {
+      "Market": "Africa",
+      "revenue": 2061679.37,
+      "profit": 252071.18,
+      "margin_pct": 12.226497663407283
+    }
+  ],
+  "loss_customers": 4069,
+  "loss_products": 3,
+  "category_count": 50
+}
