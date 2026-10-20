@@ -16,4 +16,4 @@ def chart_category_labels(values):
 
 def customer_rankings(frame, n=15):
     """Return true highest-profit and most-negative-profit customers."""
-    return frame.nlargest(n, 'profit').copy(), frame[frame.profit < 0].nsmallest(n, 'profit').copy()
+    return frame.nlargest(n, 'profit').copy(), frame[frame['profit'] < 0].nsmallest(n, 'profit').copy()

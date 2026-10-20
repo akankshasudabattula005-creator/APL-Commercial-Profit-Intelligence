@@ -1,78 +1,46 @@
-# Commercial Profit Intelligence — Supply Chain Case Study
+# Commercial Profit Intelligence — Public Demonstration
 
-A reproducible, line-level profitability decision-support application built with Python, Pandas, Plotly and Streamlit.
+**Live dashboard:** https://apl-commercial-profit-intelligence.streamlit.app/  
+**GitHub repository:** https://github.com/akankshasudabattula005-creator/APL-Commercial-Profit-Intelligence
 
-**Important:** This is an educational case study using the provided APL-labelled dataset. It is **not** an official APL Logistics or KWE Group product, audit or endorsed financial report. Monetary values are shown in **currency units (CU)** because the dataset does not independently establish currency.
+## Overview
+An independently developed, interactive supply-chain commercial analytics prototype using **16,000 fully synthetic transaction lines**. The demo is not affiliated with, audited by, or endorsed by APL Logistics / KWE Group. Its figures are generated examples, **not company financial results**.
 
-## Run locally
+## Implemented dashboard
+Seven sections: **Executive overview**, **Customer value**, **Product & category**, **Discount lab**, **Market intelligence**, **Operations linkage**, **Data audit & decisions**. Shared filters: market, order region, customer segment, category, product and shipping mode. The interface supports CSV exports and a bounded discount what-if calculator.
 
+## Public deliverables
+- `app.py`: seven-section Streamlit dashboard and source selection
+- `analytics.py`: auditable preparation, reconciliation, aggregation, customer tiers, scenarios
+- `ui_helpers.py`: chart and numeric formatting helpers
+- `generate_demo_data.py`: deterministic synthetic data generator
+- `data/APL_Logistics.csv`: **synthetic** generated dataset (16,000 lines)
+- `tests/`: automated analytics, helper and full dashboard smoke tests
+- `reports/Research_Report.pdf`: synthetic demonstration research report
+- `reports/Executive_Brief.pdf`: synthetic demonstration executive summary
+
+## Run and test
 ```bash
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-python -m pytest -q
-streamlit run app.py
-```
-
-Open the localhost URL shown by Streamlit. Dataset is bundled at `data/APL_Logistics.csv`. An alternative CSV can be uploaded in the sidebar.
-
-## Modules
-Executive overview; customer value; product and category; observed discount exposure and scenario lab; geographic profitability; shipping-mode association; data audit and decision protocol. All visuals share sidebar filters; analytical tables export as CSV.
-
-## Financial definitions
-- `gross_sales = Sales` (pre-discount line sales).
-- `discount = Order Item Discount` (line discount amount).
-- `net_sales = Order Item Total` (after-discount line sales).
-- `profit = Order Profit Per Order` (recorded profit field; treated as line-level profit).
-- `weighted_margin = SUM(profit) / SUM(net_sales)` (not mean of individual margin percentages).
-- `discount_rate = SUM(discount) / SUM(gross_sales)`.
-- Reconciliation: `ABS(gross_sales - discount - net_sales) <= 0.05` per line, with positive gross/net sales and nonnegative discount. Excluded rows are counted in the audit tab.
-- Loss-making customer: negative aggregate profit for customer ID in the current selection. Tiers are descriptive, not CLV predictions.
-
-## Interpretation limitations
-No date/time, transaction currency metadata, shipment costs, complete cost accounting, unique order ID, customer acquisition costs, or randomized discount experiment. Do not claim temporal trends, causal discount thresholds, actual shipping-cost leakage, or customer lifetime value. The discount slider is a **static accounting sensitivity**, assuming fixed quantities, costs and mix. Changing price may change demand in reality.
-
-## Deployment (Streamlit Community Cloud)
-1. Create a **public** GitHub repository, push the project including `app.py`, `analytics.py`, `requirements.txt`, `tests/`, and `data/` (confirm dataset sharing is permitted).
-2. Open https://share.streamlit.io/ and connect your GitHub repository. Entry point: `app.py`.
-3. Verify every tab, sidebar filter, download, upload, and first-run behavior in an incognito browser.
-4. Submit the **repository root URL**, e.g. `https://github.com/USER/REPO`, **not** a `/settings/...` URL.
-5. Submit the actual live `https://...streamlit.app/` URL after verification. Never claim deployment before testing it.
-
-## Submission checklist
-- [ ] `python -m pytest -q` passes
-- [ ] `streamlit run app.py` opens locally
-- [ ] Data-sharing rights confirmed
-- [ ] Public repository URL opens while logged out
-- [ ] Streamlit deployment opens while logged out
-- [ ] Research report and executive brief included
-- [ ] No claims of verified company affiliation or invented financial forecasts
-
-
-## UI refinement update (October 2026)
-
-- Replaced deprecated `use_container_width=True` with `width="stretch"`.
-- Added compact KPI formatting (K/M/B currency units).
-- Formatted financial tables and highlighted negative profit and margins.
-- Added executive loss-line exposure narrative and a loss-making product review table.
-- Set `observed=False` explicitly in pandas aggregation to preserve prior behavior.
-
-### Windows quick start
-
-```powershell
-cd "D:\APL_Profit_Intelligence_Refined"
 python -m pip install -r requirements.txt
 python -m pytest -q
 python -m streamlit run app.py
 ```
+Optional: `python generate_demo_data.py` regenerates the synthetic CSV. The application reads its bundled CSV using a content-dependent cache key, preventing an older same-named CSV from being silently reused after deployment.
 
-Financial amounts are expressed in unverified currency units (CU). The scenario calculator is a fixed-volume mechanical sensitivity, not a forecast.
+## Financial methodology
+- Gross sales = `Sales`; discount = `Order Item Discount`; net sales = `Order Item Total`; recorded synthetic profit = `Order Profit Per Order`.
+- Weighted net margin = 100 × SUM(profit) / SUM(net sales).
+- Financial rows require complete financial values, positive gross and net, nonnegative discount and absolute reconciliation discrepancy ≤ 0.05 CU.
+- Discount slider = mechanical fixed-volume accounting sensitivity, not a causal forecast.
+- Customer tiers = descriptive contribution groups, not customer lifetime value predictions.
+- Shipping mode associations do not establish actual shipping-cost leakage or causal effects.
+- Financial values use **CU (unspecified currency units)**. Lines are not necessarily unique orders.
 
-## Final presentation refinements
+## Data safety
+The public CSV is synthetic and contains no original company records, names, street addresses, or precise coordinates. User-uploaded CSVs are processed in the active app session and are not intentionally written to the repository; users should upload only data they are authorized to process. The publicly available reports describe **synthetic demo outcomes** only.
 
-- Responsive HTML KPI grid prevents numeric truncation and keeps CU in the unit legend.
-- Customer IDs are categorical in horizontal profit ranking charts.
-- Loss-making customer ranking includes only negative-profit customers.
-- Added isolated regression tests for KPI formatting and customer rankings.
-- This is an independent dataset case study, not audited APL Logistics corporate financials.
+## Limitations
+This educational prototype does not prove real-world performance, corporate affiliation, verified financial impact, price elasticity, causal discount thresholds, or customer lifetime value. The original provider dataset and original private analysis are deliberately excluded from this public repository.
+
+## Deployment and submission
+Streamlit Community Cloud should point to this repository's `main` branch and entrypoint `app.py`. Verify that the **Data audit & decisions** tab shows **16,000 source rows** in a new private browser session, all seven tabs render, and no red errors are present. Submit the **repository root URL**, not `/settings`, and the **live Streamlit URL**. Include both PDFs if the evaluation portal requests reports.

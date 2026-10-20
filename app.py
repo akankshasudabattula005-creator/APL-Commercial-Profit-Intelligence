@@ -11,23 +11,28 @@ st.set_page_config(page_title='APL | Commercial Intelligence',page_icon='📈',l
 st.markdown("""<style>.block-container{padding-top:1.3rem;max-width:1550px}h1,h2,h3{letter-spacing:-.025em}.stMetric{padding:1.1rem;border:1px solid #334155;border-radius:14px;background:rgba(100,116,139,.08)}[data-testid=stSidebar]{border-right:1px solid #334155}div[data-testid=stTabs] button{font-weight:600}</style>""",unsafe_allow_html=True)
 BASE=Path(__file__).resolve().parent
 @st.cache_data(show_spinner='Loading and reconciling financial records...')
-def read_file(path):return prepare(pd.read_csv(path,encoding='latin1',low_memory=False))
+def read_file(path, signature):
+    return prepare(pd.read_csv(path,encoding='latin1',low_memory=False))
 @st.cache_data(show_spinner='Validating uploaded data...')
 def read_upload(contents):
     from io import BytesIO
     return prepare(pd.read_csv(BytesIO(contents),encoding='latin1',low_memory=False))
 path=BASE/'data'/'APL_Logistics.csv'
-st.title('Commercial Profit Intelligence')
-st.caption('APL Logistics dataset case study  /  Customer · Product · Margin · Discount · Geography')
+st.title('Commercial Profit Intelligence — Public Demo')
+st.caption('PUBLIC DEMONSTRATION — bundled data are synthetic, not company results / Customer · Product · Margin · Discount · Geography')
 with st.sidebar:
     st.markdown('### CONTROL CENTER')
-    source=st.radio('Data source',['Bundled dataset','Upload CSV'],horizontal=False)
+    source=st.radio('Data source',['Synthetic demo dataset','Upload CSV'],horizontal=False)
     if source=='Upload CSV':
         uploaded=st.file_uploader('Transaction CSV',type='csv')
         if uploaded is None:st.info('Upload a CSV to proceed.');st.stop()
         raw=read_upload(uploaded.getvalue())
-    else:raw=read_file(str(path))
+    else:
+        import hashlib
+        raw=read_file(str(path),hashlib.sha256(path.read_bytes()).hexdigest())
     st.caption(f'{len(raw):,} source transaction lines')
+    if source=='Upload CSV':
+        st.warning('Uploaded data are user-supplied, not the bundled synthetic demonstration dataset.')
     invalid=raw.loc[~raw.valid_financial]
     if len(invalid):st.warning(f'{len(invalid):,} invalid financial rows excluded from financial KPIs. See Audit.')
     raw_valid=raw.loc[raw.valid_financial].copy()
@@ -152,7 +157,8 @@ with tabs[1]:
     a,b=st.columns(2)
     with a:bars(cust,'Customer Id','profit','Top customer profit',15)
     with b:bars(cust[cust.profit < 0],'Customer Id','profit','Most loss-making customers',15,ranking='bottom')
-    st.plotly_chart(px.scatter(cust.assign(customer_label=cust['Customer Id'].astype(str)),x='revenue',y='margin_pct',size='lines',color='tier',hover_data=['customer_label','profit'],title='Customer revenue versus profit margin',labels={'revenue':'Net revenue (CU)','margin_pct':'Profit margin (%)','customer_label':'Customer ID'}),width="stretch")
+    if not cust.empty:
+        st.plotly_chart(px.scatter(cust.assign(customer_label=cust['Customer Id'].astype(str)),x='revenue',y='margin_pct',size='lines',color='tier',hover_data=['customer_label','profit'],title='Customer revenue versus profit margin',labels={'revenue':'Net revenue (CU)','margin_pct':'Profit margin (%)','customer_label':'Customer ID'}),width="stretch")
     show_table(cust.sort_values('profit'))
     dl(cust,'customer_value_export')
     st.caption('Customer tiers describe observed contribution in the selected data only; they do not estimate customer lifetime value.')
@@ -166,7 +172,10 @@ with tabs[2]:
     show_table(weak)
     heat=aggregate(d,['Market','Category Name'])
     piv=heat.pivot(index='Category Name',columns='Market',values='margin_pct')
-    st.plotly_chart(px.imshow(piv,aspect='auto',color_continuous_scale='RdYlGn',color_continuous_midpoint=0,title='Category margin by market (%)'),width="stretch")
+    if not piv.empty and piv.notna().any().any():
+        st.plotly_chart(px.imshow(piv,aspect='auto',color_continuous_scale='RdYlGn',color_continuous_midpoint=0,title='Category margin by market (%)'),width="stretch")
+    else:
+        st.info('No market-category margin observations available.')
     dl(prod,'product_profitability_export')
 with tabs[3]:
     st.subheader('Observed discount exposure')
